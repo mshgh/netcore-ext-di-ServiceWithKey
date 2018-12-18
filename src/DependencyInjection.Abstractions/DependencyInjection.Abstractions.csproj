@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Msh.Microsoft.Extensions.DependencyInjection.Abstractions</AssemblyName>
+    <RootNamespace>Msh.Microsoft.Extensions.DependencyInjection.Abstractions</RootNamespace>
+  </PropertyGroup>
+
+</Project>
