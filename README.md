@@ -1,1 +1,1 @@
-# netcore-ext-di-ServiceWithKey
+# netcore-microsoft-extensions
