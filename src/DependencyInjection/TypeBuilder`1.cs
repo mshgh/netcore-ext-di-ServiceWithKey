@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
 using Msh.Microsoft.Extensions.DependencyInjection.Abstractions;
 
 namespace Msh.Microsoft.Extensions.DependencyInjection
@@ -9,21 +8,27 @@ namespace Msh.Microsoft.Extensions.DependencyInjection
     internal static class TypeBuilder<TKey>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Type IServiceWithKey(ServiceDescriptor descriptor) => MakeKeyServiceType(typeof(IServiceWithKey<,>), descriptor);
+        public static Type IServiceWithKey(Type serviceType) => MakeGenericTypeWithKey(typeof(IServiceWithKey<,>), serviceType);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Type ServiceWithKey(ServiceDescriptor descriptor) => MakeKeyServiceType(typeof(ServiceWithKey<,>), descriptor);
+        public static Type ServiceWithKey(Type serviceType) => MakeGenericTypeWithKey(typeof(ServiceWithKey<,>), serviceType);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Type IEnumerableKeyValuePair(ServiceDescriptor descriptor) => typeof(IEnumerable<>).MakeGenericType(MakeKeyServiceType(typeof(KeyValuePair<,>), descriptor));
+        public static Type IEnumerableKeyServicePair(Type serviceType) => typeof(IEnumerable<>).MakeGenericType(MakeGenericTypeWithKey(typeof(KeyValuePair<,>), serviceType));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Type ServicesWithKey(ServiceDescriptor descriptor) => MakeKeyServiceType(typeof(ServicesWithKey<,>), descriptor);
+        public static Type EnumerableKeyServicePair(Type serviceType) => MakeGenericTypeWithKey(typeof(EnumerableKeyServicePair<,>), serviceType);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Type RegisteredServices(ServiceDescriptor descriptor) => MakeKeyServiceType(typeof(RegisteredServices<,>), descriptor);
+        public static Type IEnumerableKeyLazyServicePair(Type serviceType) => typeof(IEnumerable<>).MakeGenericType(MakeGenericTypeWithKey(typeof(KeyValuePair<,>), typeof(Lazy<>).MakeGenericType(serviceType)));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Type MakeKeyServiceType(Type type, ServiceDescriptor descriptor) => type.MakeGenericType(typeof(TKey), descriptor.ServiceType);
+        public static Type EnumerableKeyLazyServicePair(Type serviceType) => MakeGenericTypeWithKey(typeof(EnumerableKeyServicePair<,>), typeof(Lazy<>).MakeGenericType(serviceType));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Type RegisteredServicesSingleton(Type serviceType) => MakeGenericTypeWithKey(typeof(RegisteredServicesSingleton<,>), serviceType);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Type MakeGenericTypeWithKey(Type keyedType, Type serviceType) => keyedType.MakeGenericType(typeof(TKey), serviceType);
     }
 }

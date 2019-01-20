@@ -5,42 +5,41 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Msh.Microsoft.Extensions.DependencyInjection
 {
-    internal static class RegisteredServices<TKey, TService>
+    internal class RegisteredServices<TKey, TService>
     {
-        private static readonly IDictionary<TKey, Implementation> Services = new Dictionary<TKey, Implementation>();
+        private readonly IDictionary<TKey, Implementation> _cache = new Dictionary<TKey, Implementation>();
 
-        public static ServiceDescriptor TryAddService(TKey key, ServiceDescriptor descriptor)
+        public ServiceDescriptor TryAddService(TKey key, ServiceDescriptor serviceDescriptor)
         {
-            if (Services.ContainsKey(key)) return null;
+            if (_cache.ContainsKey(key)) return null;
 
-            if (descriptor.ImplementationInstance != null)
+            if (serviceDescriptor.ImplementationInstance != null)
             {
-                object instance = descriptor.ImplementationInstance;
-                Services.Add(key, new Implementation { Instance = (TService)instance });
-                return ServiceDescriptor.Singleton(instance.GetType(), instance);
+                _cache.Add(key, new Implementation { Instance = (TService)serviceDescriptor.ImplementationInstance });
+                return null;
             }
 
-            Type type = descriptor.ImplementationType;
+            Type type = serviceDescriptor.ImplementationType;
             if (type == null) // this must be 'ImplementationFactory'
             {
                 type = typeof(ServiceFactoryProxy<>).MakeGenericType(ClassGenerator.GetUniqueClassType());
-                var setServiceFactory = DelegateHelper.GetDelegate<Action<Func<IServiceProvider, object>>>(type, "SetServiceFactory");
-                setServiceFactory(descriptor.ImplementationFactory);
+                var setServiceFactory = DelegateHelper.GetSetServiceFactory(type);
+                setServiceFactory(serviceDescriptor.ImplementationFactory);
             }
 
-            Services.Add(key, new Implementation { Type = type });
-            return new ServiceDescriptor(type, type, descriptor.Lifetime);
+            _cache.Add(key, new Implementation { Type = type });
+            return new ServiceDescriptor(type, type, serviceDescriptor.Lifetime);
         }
 
-        public static TService GetService(TKey key, IServiceProvider sp)
+        public TService GetService(TKey key, IServiceProvider serviceProvider)
         {
-            if (sp == null) throw new ArgumentNullException(nameof(sp));
-            if (!Services.TryGetValue(key, out var implementation)) throw new Exception($"There is no service with key '{key}' available");
+            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
+            if (!_cache.TryGetValue(key, out var implementation)) throw new Exception($"There is no service with key '{key}' available");
 
             TService service = implementation.Instance;
             if (service == null)
             {
-                var instance = sp.GetService(implementation.Type);
+                var instance = serviceProvider.GetService(implementation.Type);
                 var proxy = instance as ServiceFactoryProxy;
                 service = proxy != null ? proxy.Service : (TService)instance;
             }
@@ -48,11 +47,19 @@ namespace Msh.Microsoft.Extensions.DependencyInjection
             return service;
         }
 
-        public static IEnumerator<KeyValuePair<TKey, TService>> GetServices(IServiceProvider sp)
+        public IEnumerator<KeyValuePair<TKey, TService>> GetServices(IServiceProvider serviceProvider)
         {
-            foreach (var key in Services.Keys)
+            foreach (var key in _cache.Keys)
             {
-                yield return new KeyValuePair<TKey, TService>(key, GetService(key, sp));
+                yield return new KeyValuePair<TKey, TService>(key, GetService(key, serviceProvider));
+            }
+        }
+
+        public IEnumerator<KeyValuePair<TKey, Lazy<TService>>> GetLazyServices(IServiceProvider serviceProvider)
+        {
+            foreach (var key in _cache.Keys)
+            {
+                yield return new KeyValuePair<TKey, Lazy<TService>>(key, new Lazy<TService>(() => GetService(key, serviceProvider)));
             }
         }
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Msh.Microsoft.Extensions.DependencyInjection.Tests")]
 
 namespace Msh.Microsoft.Extensions.DependencyInjection
 {
-    public static class ServicesCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         public static IServiceCollection TryAddTransient<TKey>(this IServiceCollection services, TKey key, Type service, Type implementationType)
         {
@@ -25,6 +26,11 @@ namespace Msh.Microsoft.Extensions.DependencyInjection
             return services.TryAdd(key, ServiceDescriptor.Scoped<TService, TImplementation>());
         }
 
+        public static IServiceCollection TryAddSingleton<TKey>(this IServiceCollection services, TKey key, Type serviceType, object implementationInstance)
+        {
+            return services.TryAdd(key, ServiceDescriptor.Singleton(serviceType, implementationInstance));
+        }
+
         public static IServiceCollection TryAddSingleton<TKey, TService, TImplementation>(this IServiceCollection services, TKey key)
             where TService : class
             where TImplementation : class, TService
@@ -36,16 +42,27 @@ namespace Msh.Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection TryAdd<TKey>(this IServiceCollection services, TKey key, ServiceDescriptor descriptor)
         {
+            Func<TKey, ServiceDescriptor, ServiceDescriptor> tryAddService = DelegateHelper.GetTryAddServiceOfRegisteredServicesSingleton<TKey>(descriptor.ServiceType); 
+            TryAdd(tryAddService, services, key, descriptor);
+            return services;
+        }
+
+        internal static void TryAdd<TKey>(Func<TKey, ServiceDescriptor, ServiceDescriptor> tryAddService, IServiceCollection services, TKey key, ServiceDescriptor descriptor)
+        {
+            if (tryAddService == null) throw new ArgumentNullException(nameof(tryAddService));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
 
-            services.TryAddSingleton(TypeBuilder<TKey>.IServiceWithKey(descriptor), TypeBuilder<TKey>.ServiceWithKey(descriptor));
-            services.TryAddTransient(TypeBuilder<TKey>.IEnumerableKeyValuePair(descriptor), TypeBuilder<TKey>.ServicesWithKey(descriptor));
+            Type serviceType = descriptor.ServiceType;
+            services.TryAddTransient(TypeBuilder<TKey>.IServiceWithKey(serviceType), TypeBuilder<TKey>.ServiceWithKey(serviceType));
+            services.TryAddTransient(TypeBuilder<TKey>.IEnumerableKeyServicePair(serviceType), TypeBuilder<TKey>.EnumerableKeyServicePair(serviceType));
+            services.TryAddTransient(TypeBuilder<TKey>.IEnumerableKeyLazyServicePair(serviceType), TypeBuilder<TKey>.EnumerableKeyLazyServicePair(serviceType));
 
-            var tryAddService = DelegateHelper.GetDelegate<Func<TKey, ServiceDescriptor, ServiceDescriptor>>(TypeBuilder<TKey>.RegisteredServices(descriptor), "TryAddService");
             var proxyDescriptor = tryAddService(key, descriptor);
-            if (proxyDescriptor != null) services.TryAdd(proxyDescriptor);
-
-            return services;
+            if (proxyDescriptor != null)
+            {
+                // TODO: don't add twice & throw on inconsistent lifetime
+                services.TryAdd(proxyDescriptor);
+            }
         }
     }
 }
