@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.DependencyInjection;
 using Msh.Microsoft.Extensions.DependencyInjection.Abstractions;
 using Xunit;
 
@@ -11,38 +10,36 @@ namespace Msh.Microsoft.Extensions.DependencyInjection.Tests
     public sealed class TypeBuilderTests
     {
         private interface IFoo { }
-        private sealed class Foo : IFoo { }
 
         [Fact]
-        public void GenericType_IServiceWithKey_IsBuiltCorrectly() => TestTypeBuilder<IFoo, Foo>(typeof(IServiceWithKey<string, IFoo>), TypeBuilder<string>.IServiceWithKey);
+        public void GenericType_IServiceWithKey_IsBuiltCorrectly() => TestTypeBuilder<IServiceWithKey<string, IFoo>>(TypeBuilder<string>.IServiceWithKey);
 
         [Fact]
-        public void GenericType_ServiceWithKey_IsBuiltCorrectly() => TestTypeBuilder<IFoo, Foo>(typeof(ServiceWithKey<string, IFoo>), TypeBuilder<string>.ServiceWithKey);
+        public void GenericType_ServiceWithKey_IsBuiltCorrectly() => TestTypeBuilder<ServiceWithKey<string, IFoo>>(TypeBuilder<string>.ServiceWithKey);
 
         [Fact]
-        public void GenericType_IEnumerableKeyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IFoo, Foo>(typeof(IEnumerable<KeyValuePair<string, IFoo>>), TypeBuilder<string>.IEnumerableKeyServicePair);
+        public void GenericType_IEnumerableKeyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IEnumerable<KeyValuePair<string, IFoo>>>(TypeBuilder<string>.IEnumerableKeyServicePair);
 
         [Fact]
-        public void GenericType_EnumerableKeyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IFoo, Foo>(typeof(EnumerableKeyServicePair<string, IFoo>), TypeBuilder<string>.EnumerableKeyServicePair);
+        public void GenericType_EnumerableKeyServicePair_IsBuiltCorrectly() => TestTypeBuilder<EnumerableKeyServicePair<string, IFoo>>(TypeBuilder<string>.EnumerableKeyServicePair);
 
         [Fact]
-        public void GenericType_IEnumerableKeyLazyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IFoo, Foo>(typeof(IEnumerable<KeyValuePair<string, Lazy<IFoo>>>), TypeBuilder<string>.IEnumerableKeyLazyServicePair);
+        public void GenericType_IEnumerableKeyLazyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IEnumerable<KeyValuePair<string, Lazy<IFoo>>>>(TypeBuilder<string>.IEnumerableKeyLazyServicePair);
 
         [Fact]
-        public void GenericType_EnumerableKeyLazyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IFoo, Foo>(typeof(EnumerableKeyServicePair<string, Lazy<IFoo>>), TypeBuilder<string>.EnumerableKeyLazyServicePair);
+        public void GenericType_EnumerableKeyLazyServicePair_IsBuiltCorrectly() => TestTypeBuilder<EnumerableKeyServicePair<string, Lazy<IFoo>>>(TypeBuilder<string>.EnumerableKeyLazyServicePair);
 
         [Fact]
-        public void GenericType_RegisteredServicesSingleton_IsBuiltCorrectly() => TestTypeBuilder<IFoo, Foo>(typeof(RegisteredServicesSingleton<string, IFoo>), TypeBuilder<string>.RegisteredServicesSingleton);
+        public void GenericType_RegisteredServicesSingleton_IsBuiltCorrectly() => TestTypeBuilder(typeof(RegisteredServicesSingleton<string, IFoo>), TypeBuilder<string>.RegisteredServicesSingleton);
 
-        private static void TestTypeBuilder<TService, TImplementation>(Type expectedType, Func<Type, Type> buildType)
-            where TService : class
-            where TImplementation : class, TService
+        private static void TestTypeBuilder<TExpected>(Func<Type, Type> buildType) => TestTypeBuilder(typeof(TExpected), buildType);
+        private static void TestTypeBuilder(Type expectedType, Func<Type, Type> buildType)
         {
             // Arrange
-            var descriptor = ServiceDescriptor.Transient<TService, TImplementation>();
+            var serviceType = typeof(IFoo);
 
             // Act
-            Func<Type> act = () => buildType(descriptor.ServiceType);
+            Func<Type> act = () => buildType(serviceType);
 
             // Assert
             using (new AssertionScope())
