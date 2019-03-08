@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Msh.Microsoft.Extensions.DependencyInjection;
 using Msh.Microsoft.Extensions.DependencyInjection.Abstractions;
 using Xunit;
 
-namespace Msh.Microsoft.Extensions.DependencyInjection.Tests
+namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest
 {
-    public sealed class TypeBuilderTests
+    public sealed class TypeBuilder_1Class
     {
         private interface IFoo { }
 

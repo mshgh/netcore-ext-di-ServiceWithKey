@@ -6,7 +6,7 @@ using Msh.Microsoft.Extensions.DependencyInjection;
 using Msh.Microsoft.Extensions.DependencyInjection.Abstractions;
 using Xunit;
 
-namespace Msh.Microsoft.Extensions.DependencyInjection.Tests.ServiceWithKeyTests
+namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.ServiceWithKey_2Class
 {
     public sealed class Indexer
     {

@@ -4,15 +4,15 @@ using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Msh.Microsoft.Extensions.DependencyInjection.Abstractions;
 using Xunit;
-using static Msh.Microsoft.Extensions.DependencyInjection.Tests.ServiceProviderTests.ServiceProviderFixture;
+using static Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.IServiceProviderInterface.ServiceProviderFixture;
 
-namespace Msh.Microsoft.Extensions.DependencyInjection.Tests.ServiceProviderTests
+namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.IServiceProviderInterface
 {
-    public sealed class GetTransientService : IClassFixture<ServiceProviderFixture>
+    public sealed class GetServiceMethod_Transient : IClassFixture<ServiceProviderFixture>
     {
         private readonly ServiceProviderFixture _serviceProviderFixture;
 
-        public GetTransientService(ServiceProviderFixture serviceProviderFixture)
+        public GetServiceMethod_Transient(ServiceProviderFixture serviceProviderFixture)
         {
             _serviceProviderFixture = serviceProviderFixture ?? throw new ArgumentNullException(nameof(serviceProviderFixture));
         }
@@ -39,7 +39,7 @@ namespace Msh.Microsoft.Extensions.DependencyInjection.Tests.ServiceProviderTest
         }
 
         [Fact]
-        public void IfTransientServiceIsResolvedTwiceWithDifferentKeys_ThenInstanceOfGivenTypeIsCreated()
+        public void IfTransientServiceIsResolvedTwiceWithDifferentKeys_ThenInstanceOfAppropriateTypeIsCreated()
         {
             // Arrange
             var serviceProvider = _serviceProviderFixture.CompleteServiceProvider;

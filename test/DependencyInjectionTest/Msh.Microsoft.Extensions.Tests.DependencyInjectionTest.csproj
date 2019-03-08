@@ -21,8 +21,4 @@
     <ProjectReference Include="..\..\src\DependencyInjection\Msh.Microsoft.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ServiceCollectionExtensionsClass\" />
-  </ItemGroup>
-
 </Project>

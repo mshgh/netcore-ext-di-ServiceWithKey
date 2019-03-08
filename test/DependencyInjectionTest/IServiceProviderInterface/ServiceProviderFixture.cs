@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Msh.Microsoft.Extensions.DependencyInjection;
 
-namespace Msh.Microsoft.Extensions.DependencyInjection.Tests.ServiceProviderTests
+namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.IServiceProviderInterface
 {
     public sealed class ServiceProviderFixture : IDisposable
     {

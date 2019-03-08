@@ -1,8 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Msh.Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Msh.Microsoft.Extensions.DependencyInjection.Tests.RegisteredServicesTests
+namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.RegisteredServices_2Class
 {
     public sealed class TryAddServiceMethod
     {

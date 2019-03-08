@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Msh.Microsoft.Extensions.DependencyInjection.Tests.RegisteredServicesTests
+namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.RegisteredServices_2Class
 {
     public sealed class GetServiceMethod
     {
