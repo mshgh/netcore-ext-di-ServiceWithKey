@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Msh.Microsoft.Extensions.DependencyInjection
 {
     internal static class RegisteredServicesSingleton<TKey, TService>
+        where TService: class
     {
         private static readonly RegisteredServices<TKey, TService> _instance = new RegisteredServices<TKey, TService>();
 

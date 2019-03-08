@@ -8,13 +8,13 @@ namespace Msh.Microsoft.Extensions.DependencyInjection
     {
         private static readonly ConcurrentDictionary<(Type, string), object> _delegates = new ConcurrentDictionary<(Type, string), object>();
 
-        public static Func<TKey, ServiceDescriptor, ServiceDescriptor> GetTryAddServiceOfRegisteredServicesSingleton<TKey>(Type serviceType)
-            => GetDelegate<Func<TKey, ServiceDescriptor, ServiceDescriptor>>(TypeBuilder<TKey>.RegisteredServicesSingleton(serviceType), "TryAddService");
+        public static Func<TKey, ServiceDescriptor, ServiceDescriptor> GetTryAddServiceMethodOfRegisteredServicesSingleton<TKey>(Type serviceType)
+            => GetMethodDelegate<Func<TKey, ServiceDescriptor, ServiceDescriptor>>(TypeBuilder<TKey>.RegisteredServicesSingleton(serviceType), "TryAddService");
 
-        public static Action<Func<IServiceProvider, object>> GetSetServiceFactory(Type serviceFactoryProxy)
-            => GetDelegate<Action<Func<IServiceProvider, object>>>(serviceFactoryProxy, "SetServiceFactory");
+        public static Action<Func<IServiceProvider, object>> GetSetImplementationFactoryMethod(Type serviceProxy)
+            => GetMethodDelegate<Action<Func<IServiceProvider, object>>>(serviceProxy, "SetImplementationFactory");
 
-        private static TDelegate GetDelegate<TDelegate>(Type type, string name) => (TDelegate)_delegates.GetOrAdd((type, name),
+        private static TDelegate GetMethodDelegate<TDelegate>(Type type, string name) => (TDelegate)_delegates.GetOrAdd((type, name),
             key =>
             {
                 (Type classType, string methodName) = key;

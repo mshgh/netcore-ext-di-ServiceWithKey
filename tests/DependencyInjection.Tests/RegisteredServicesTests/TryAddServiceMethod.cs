@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Msh.Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Msh.Microsoft.Extensions.DependencyInjection.Tests.RegisteredServicesTests

@@ -5,6 +5,7 @@ using Msh.Microsoft.Extensions.DependencyInjection.Abstractions;
 namespace Msh.Microsoft.Extensions.DependencyInjection
 {
     internal sealed class ServiceWithKey<TKey, TService> : IServiceWithKey<TKey, TService>
+        where TService: class
     {
         private readonly ConcurrentDictionary<TKey, Lazy<TService>> _services = new ConcurrentDictionary<TKey, Lazy<TService>>();
         private readonly IServiceProvider _serviceProvider;

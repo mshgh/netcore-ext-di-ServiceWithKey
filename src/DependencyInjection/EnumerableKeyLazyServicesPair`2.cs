@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace Msh.Microsoft.Extensions.DependencyInjection
 {
     internal sealed class EnumerableKeyLazyServicesPair<TKey, TService> : IEnumerable<KeyValuePair<TKey, Lazy<TService>>>
+        where TService: class
     {
         private readonly IEnumerator<KeyValuePair<TKey, Lazy<TService>>> _enumerator;
         public EnumerableKeyLazyServicesPair(IServiceProvider serviceProvider) => _enumerator = RegisteredServicesSingleton<TKey, TService>.GetLazyServices(serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider)));

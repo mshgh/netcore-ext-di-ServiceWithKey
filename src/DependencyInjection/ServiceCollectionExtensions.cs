@@ -42,7 +42,7 @@ namespace Msh.Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection TryAdd<TKey>(this IServiceCollection services, TKey key, ServiceDescriptor descriptor)
         {
-            Func<TKey, ServiceDescriptor, ServiceDescriptor> tryAddService = DelegateHelper.GetTryAddServiceOfRegisteredServicesSingleton<TKey>(descriptor.ServiceType); 
+            Func<TKey, ServiceDescriptor, ServiceDescriptor> tryAddService = DelegateHelper.GetTryAddServiceMethodOfRegisteredServicesSingleton<TKey>(descriptor.ServiceType); 
             TryAdd(tryAddService, services, key, descriptor);
             return services;
         }
