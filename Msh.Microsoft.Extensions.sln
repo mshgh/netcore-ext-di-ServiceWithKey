@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Msh.Microsoft.Extensions.De
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Msh.Microsoft.Extensions.DependencyInjection", "src\DependencyInjection\Msh.Microsoft.Extensions.DependencyInjection.csproj", "{6B296625-C47E-4A6A-9328-C809471C20A4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A8B767DB-C855-41CD-8DE7-B4D39052BD6C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A8B767DB-C855-41CD-8DE7-B4D39052BD6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Msh.Microsoft.Extensions.DependencyInjection.Tests", "tests\DependencyInjection.Tests\Msh.Microsoft.Extensions.DependencyInjection.Tests.csproj", "{7285A619-2476-462A-A320-54A7C783B0E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Msh.Microsoft.Extensions.Tests.DependencyInjectionTest", "test\DependencyInjectionTest\Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.csproj", "{7285A619-2476-462A-A320-54A7C783B0E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
