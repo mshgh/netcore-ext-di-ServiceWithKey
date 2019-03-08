@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Msh.Microsoft.Extensions.DependencyInjection.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Msh.Microsoft.Extensions.Tests.DependencyInjectionTest")]
 
 namespace Msh.Microsoft.Extensions.DependencyInjection
 {
