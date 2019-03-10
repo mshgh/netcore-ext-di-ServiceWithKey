@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Msh.Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -11,23 +13,33 @@ namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.RegisteredServi
         private sealed class Foo : IFoo { }
 
         [Fact]
-        public void IfTheSameKeyIsAddedSecondTime_ThenNullServiceDescriptorIsReturned()
+        public void IfTheSameKeyIsAddedMultipleTimes_ThenOnlyFirstCallReturnsAdjustedServiceDescriptorAndSubsequentCallsRetunNull()
         {
             // Arrange
             var registeredServices = new RegisteredServices<string, IFoo>();
             var transientDescriptor = ServiceDescriptor.Transient<IFoo, Foo>();
             var key = "key";
-            registeredServices.TryAddService(key, transientDescriptor);
 
             // Act
-            var serviceDescriptor = registeredServices.TryAddService(key, transientDescriptor);
+            Func<(ServiceDescriptor, ServiceDescriptor, ServiceDescriptor)> act = () =>
+            (
+                registeredServices.TryAddService(key, transientDescriptor),
+                registeredServices.TryAddService(key, transientDescriptor),
+                registeredServices.TryAddService(key, transientDescriptor)
+            );
 
             // Asset
-            serviceDescriptor.Should().BeNull("the service with the same key has been already registered");
+            using (new AssertionScope())
+            {
+                var (result1, result2, result3) = act.Should().NotThrow().Subject;
+                result1.Should().BeEquivalentTo(ServiceDescriptor.Transient<Foo, Foo>());
+                result2.Should().BeNull();
+                result3.Should().BeNull();
+            }
         }
 
         [Fact]
-        public void IfImplementationInstanceIsProvided_ThenNullServiceDescriptorIsReturned()
+        public void IfServiceDescriptorWithImplementationInstanceIsProvided_ThenNullIsReturned()
         {
             // Arrange
             var registeredServices = new RegisteredServices<string, IFoo>();
@@ -35,10 +47,11 @@ namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest.RegisteredServi
             var key = "key";
 
             // Act
-            var serviceDescriptor = registeredServices.TryAddService(key, singletonDescriptor);
+            Func<ServiceDescriptor> act = () => registeredServices.TryAddService(key, singletonDescriptor);
 
             // Asset
-            serviceDescriptor.Should().BeNull("the service with the same key has been already registered");
+            var result = act.Should().NotThrow().Subject;
+            result.Should().BeNull();
         }
     }
 }
