@@ -12,42 +12,32 @@ namespace Msh.Microsoft.Extensions.Tests.DependencyInjectionTest
     {
         private interface IFoo { }
 
-        [Fact]
-        public void GenericType_IServiceWithKey_IsBuiltCorrectly() => TestTypeBuilder<IServiceWithKey<string, IFoo>>(TypeBuilder<string>.IServiceWithKey);
-
-        [Fact]
-        public void GenericType_ServiceWithKey_IsBuiltCorrectly() => TestTypeBuilder<ServiceWithKey<string, IFoo>>(TypeBuilder<string>.ServiceWithKey);
-
-        [Fact]
-        public void GenericType_IEnumerableKeyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IEnumerable<KeyValuePair<string, IFoo>>>(TypeBuilder<string>.IEnumerableKeyServicePair);
-
-        [Fact]
-        public void GenericType_EnumerableKeyServicePair_IsBuiltCorrectly() => TestTypeBuilder<EnumerableKeyServicePair<string, IFoo>>(TypeBuilder<string>.EnumerableKeyServicePair);
-
-        [Fact]
-        public void GenericType_IEnumerableKeyLazyServicePair_IsBuiltCorrectly() => TestTypeBuilder<IEnumerable<KeyValuePair<string, Lazy<IFoo>>>>(TypeBuilder<string>.IEnumerableKeyLazyServicePair);
-
-        [Fact]
-        public void GenericType_EnumerableKeyLazyServicePair_IsBuiltCorrectly() => TestTypeBuilder<EnumerableKeyServicePair<string, Lazy<IFoo>>>(TypeBuilder<string>.EnumerableKeyLazyServicePair);
-
-        [Fact]
-        public void GenericType_RegisteredServicesSingleton_IsBuiltCorrectly() => TestTypeBuilder(typeof(RegisteredServicesSingleton<string, IFoo>), TypeBuilder<string>.RegisteredServicesSingleton);
-
-        private static void TestTypeBuilder<TExpected>(Func<Type, Type> buildType) => TestTypeBuilder(typeof(TExpected), buildType);
-        private static void TestTypeBuilder(Type expectedType, Func<Type, Type> buildType)
+        [Theory, MemberData(nameof(Data))]
+        public void IfParticularMethodOfTypeBuilderIsCalledWithTestServiceType_ThenCorrectTypeIsBuilt(Func<Type, Type> typeBuilderMethod, Type expectedType)
         {
             // Arrange
             var serviceType = typeof(IFoo);
 
             // Act
-            Func<Type> act = () => buildType(serviceType);
+            Func<Type> act = () => typeBuilderMethod(serviceType);
 
             // Assert
             using (new AssertionScope())
             {
-                var reasult = act.Should().NotThrow().Subject;
-                reasult.Should().Be(expectedType);
+                Type result = act.Should().NotThrow().Subject;
+                result.Should().Be(expectedType);
             }
         }
+
+        public static TheoryData<Func<Type, Type>, Type> Data => new TheoryData<Func<Type, Type>, Type>
+        {
+            { TypeBuilder<string>.IServiceWithKey, typeof(IServiceWithKey<string, IFoo>) },
+            { TypeBuilder<string>.ServiceWithKey, typeof(ServiceWithKey<string, IFoo>) },
+            { TypeBuilder<string>.IEnumerableKeyServicePair, typeof(IEnumerable<KeyValuePair<string, IFoo>>) },
+            { TypeBuilder<string>.EnumerableKeyServicePair, typeof(EnumerableKeyServicePair<string, IFoo>) },
+            { TypeBuilder<string>.IEnumerableKeyLazyServicePair, typeof(IEnumerable<KeyValuePair<string, Lazy<IFoo>>>) },
+            { TypeBuilder<string>.EnumerableKeyLazyServicePair, typeof(EnumerableKeyServicePair<string, Lazy<IFoo>>) },
+            { TypeBuilder<string>.RegisteredServicesSingleton, typeof(RegisteredServicesSingleton<string, IFoo>) },
+        };
     }
 }
